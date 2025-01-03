@@ -17,6 +17,11 @@
 
 body {
   background: var(--bg-color);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-start;
 }
 
 h1 {
@@ -45,7 +50,7 @@ button {
 
 .container {
   width: min(1200px, 80%);
-  margin: auto;
+  margin: 0 auto;
   border: 2px solid var(--border-color);
 }
 
