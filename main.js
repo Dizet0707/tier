@@ -3,13 +3,14 @@ import { colors } from "./colors.js";
 const settingsModal = document.querySelector(".settings-modal");
 const colorsContainer = settingsModal.querySelector(".colors");
 const tiersContainer = document.querySelector(".tiers");
+const cardsContainer = document.querySelector(".cards");
 
 let activeTier;
 
 const resetTierImages = (tier) => {
   const images = tier.querySelectorAll(".items img");
   images.forEach((img) => {
-    document.querySelector(".cards").appendChild(img);
+    cardsContainer.appendChild(img);
   });
 };
 
@@ -138,12 +139,23 @@ const initDefaultTierList = () => {
 };
 
 const initDraggables = () => {
-  const images = document.querySelectorAll(".cards img");
+  const images = cardsContainer.querySelectorAll("img");
   images.forEach((img) => {
     img.draggable = true;
 
-    img.addEventListener("dragstart", () => img.classList.add("dragging"));
+    img.addEventListener("dragstart", (e) => {
+      e.dataTransfer.setData("text/plain", "");
+      img.classList.add("dragging");
+    });
+
     img.addEventListener("dragend", () => img.classList.remove("dragging"));
+
+    img.addEventListener("dblclick", () => {
+      if (img.parentElement !== cardsContainer) {
+        cardsContainer.appendChild(img);
+        cardsContainer.scrollLeft = cardsContainer.scrollWidth;
+      }
+    });
   });
 };
 
@@ -192,4 +204,18 @@ colorsContainer.addEventListener("change", (event) => {
       .querySelector(".label")
       .style.setProperty("--color", event.target.value);
   }
+});
+
+cardsContainer.addEventListener("dragover", (event) => {
+  event.preventDefault();
+
+  const draggedImage = document.querySelector(".dragging");
+  if (draggedImage) {
+    cardsContainer.appendChild(draggedImage);
+  }
+});
+
+cardsContainer.addEventListener("drop", (event) => {
+  event.preventDefault();
+  cardsContainer.scrollLeft = cardsContainer.scrollWidth;
 });

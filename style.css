@@ -55,7 +55,7 @@ button {
 }
 
 .tiers:empty::before {
-  content: "Click on the title to add a new tier.";
+  content: attr(data-placeholder);
   height: var(--card-size);
   display: flex;
   align-items: center;
@@ -143,6 +143,19 @@ button {
   margin-top: 2rem;
   min-height: calc(var(--card-size) * 2);
   background: var(--tier-bg-color);
+}
+
+@media (max-width: 480px) {
+  .cards {
+    align-items: center;
+    flex-wrap: nowrap;
+    position: fixed;
+    bottom: 0;
+    margin-top: 0;
+    min-height: calc(var(--card-size) * 2);
+    width: 100%;
+    overflow-x: auto;
+  }
 }
 
 .settings-modal[open] {
