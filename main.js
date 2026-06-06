@@ -210,8 +210,19 @@ cardsContainer.addEventListener("dragover", (event) => {
   event.preventDefault();
 
   const draggedImage = document.querySelector(".dragging");
-  if (draggedImage) {
+  const target = event.target;
+
+  if (target === cardsContainer) {
     cardsContainer.appendChild(draggedImage);
+  } else if (target.tagName === "IMG" && target !== draggedImage && draggedImage) {
+    const { left, width } = target.getBoundingClientRect();
+    const midPoint = left + width / 2;
+
+    if (event.clientX < midPoint) {
+      target.before(draggedImage);
+    } else {
+      target.after(draggedImage);
+    }
   }
 });
 
