@@ -19,6 +19,13 @@
   <body>
     <h1>눌러서 행 추가</h1>
 
+    <div class="actions">
+      <button id="export-btn"><i class="bi bi-download"></i> JSON 내보내기</button>
+      <input type="file" id="import-file" accept=".json" style="display: none;" />
+      <button id="import-btn"><i class="bi bi-upload"></i> JSON 불러오기</button>
+      <button id="reset-btn"><i class="bi bi-arrow-counterclockwise"></i> 초기화</button>
+    </div>
+
     <div
       class="tiers container"
       data-placeholder="Click on the title to add a new tier."

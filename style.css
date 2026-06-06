@@ -31,6 +31,28 @@ h1 {
   user-select: none;
 }
 
+.actions {
+  display: flex;
+  gap: 1rem;
+  margin-bottom: 1.5rem;
+  justify-content: center;
+}
+
+.actions button {
+  padding: 0.5rem 1rem;
+  border-radius: 0.25rem;
+  background: var(--tier-bg-color);
+  color: #fff;
+  font-size: 0.875rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+}
+
+.actions button:hover {
+  background: var(--tier-control-bg-color);
+}
+
 img {
   width: var(--card-size);
   aspect-ratio: 1;

@@ -160,8 +160,116 @@ const initDraggables = () => {
 };
 
 initDraggables();
-initDefaultTierList();
 initColorOptions();
+
+const getState = () => {
+  const tiers = Array.from(tiersContainer.children).map((tier) => {
+    const labelEl = tier.querySelector(".label");
+    return {
+      label: labelEl.querySelector("span").textContent,
+      color: labelEl.style.getPropertyValue("--color").trim(),
+      images: Array.from(tier.querySelectorAll(".items img")).map((img) =>
+        img.getAttribute("src")
+      ),
+    };
+  });
+  return { tiers };
+};
+
+const loadState = (state) => {
+  // Move all images back to cardsContainer first
+  const allImages = document.querySelectorAll("img");
+  allImages.forEach((img) => cardsContainer.appendChild(img));
+
+  // Clear current tiers
+  tiersContainer.innerHTML = "";
+
+  // Reconstruct tiers
+  state.tiers.forEach((tierData) => {
+    const tier = createTier(tierData.label, tierData.color);
+    tiersContainer.appendChild(tier);
+
+    // Move corresponding images to this tier
+    tierData.images.forEach((src) => {
+      const img = cardsContainer.querySelector(`img[src="${src}"]`);
+      if (img) {
+        tier.querySelector(".items").appendChild(img);
+      }
+    });
+  });
+};
+
+let saveTimeout;
+const saveLocal = () => {
+  clearTimeout(saveTimeout);
+  saveTimeout = setTimeout(() => {
+    localStorage.setItem("tierlist-state", JSON.stringify(getState()));
+  }, 500);
+};
+
+// Load saved state or use default
+const savedState = localStorage.getItem("tierlist-state");
+if (savedState) {
+  try {
+    loadState(JSON.parse(savedState));
+  } catch (e) {
+    console.error("Failed to parse saved state", e);
+    initDefaultTierList();
+  }
+} else {
+  initDefaultTierList();
+}
+
+// Observe changes to auto-save to localStorage
+const observer = new MutationObserver(() => {
+  saveLocal();
+});
+observer.observe(tiersContainer, { childList: true, subtree: true, attributes: true, attributeFilter: ["style"] });
+observer.observe(cardsContainer, { childList: true });
+
+// UI Action Event Listeners
+document.getElementById("export-btn").addEventListener("click", () => {
+  const dataStr = "data:text/json;charset=utf-8," + encodeURIComponent(JSON.stringify(getState(), null, 2));
+  const downloadAnchorNode = document.createElement("a");
+  downloadAnchorNode.setAttribute("href", dataStr);
+  downloadAnchorNode.setAttribute("download", "tierlist.json");
+  document.body.appendChild(downloadAnchorNode);
+  downloadAnchorNode.click();
+  downloadAnchorNode.remove();
+});
+
+document.getElementById("import-btn").addEventListener("click", () => {
+  document.getElementById("import-file").click();
+});
+
+document.getElementById("import-file").addEventListener("change", (event) => {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = (e) => {
+    try {
+      const state = JSON.parse(e.target.result);
+      loadState(state);
+      saveLocal(); // Ensure loaded state is saved
+    } catch (err) {
+      alert("올바르지 않은 JSON 파일입니다.");
+    }
+    event.target.value = ""; // Reset input
+  };
+  reader.readAsText(file);
+});
+
+document.getElementById("reset-btn").addEventListener("click", () => {
+  if (confirm("정말 모든 티어리스트를 초기화하시겠습니까?")) {
+    localStorage.removeItem("tierlist-state");
+    
+    // Move all images back
+    document.querySelectorAll("img").forEach(img => cardsContainer.appendChild(img));
+    tiersContainer.innerHTML = "";
+    initDefaultTierList();
+  }
+});
 
 //* event listeners
 
